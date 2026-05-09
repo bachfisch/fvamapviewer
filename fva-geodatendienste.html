@@ -46,20 +46,24 @@
     .header-socials img{height:20px;width:20px;object-fit:contain;}
 
     /* ── SIDEBAR TOGGLE ──────────────────────────────────────── */
-    #tbtn{position:fixed;top:calc(var(--hh) + 11px);left:calc(var(--sw) - 12px);z-index:300;
-      width:24px;height:24px;border-radius:50%;background:var(--pine);
-      border:1px solid rgba(255,255,255,.15);cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      transition:left .35s cubic-bezier(.4,0,.2,1),background .2s;
-      box-shadow:0 2px 8px rgba(0,0,0,.4)}
-    #tbtn:hover{background:var(--fern)}
-    #tbtn svg{transition:transform .35s}
-    body.cls #tbtn{left:0}
-    body.cls #tbtn svg{transform:rotate(180deg)}
+    #tbtn{
+      position:fixed;top:calc(50% + var(--hh)/2);transform:translateY(-50%);
+      left:var(--sw);z-index:300;
+      width:12px;height:40px;padding:0;
+      background:#fff;
+      border:1px solid rgba(26,58,42,.14);border-left:none;
+      border-radius:0 6px 6px 0;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:left .35s cubic-bezier(.4,0,.2,1);
+      box-shadow:2px 0 6px rgba(0,0,0,.06);}
+    #tbtn:hover{background:#f0f4f1;}
+    #tbtn svg{transition:transform .35s;}
+    body.cls #tbtn{left:0;}
+    body.cls #tbtn svg{transform:rotate(180deg);}
 
     /* ── SIDEBAR ─────────────────────────────────────────────── */
     #sb{position:fixed;top:var(--hh);left:0;bottom:0;width:var(--sw);z-index:100;
-      background:var(--paper);border-right:1px solid rgba(26,58,42,.12);
+      background:#fff;border-right:1px solid rgba(26,58,42,.14);
       display:flex;flex-direction:column;
       transition:transform .35s cubic-bezier(.4,0,.2,1);
       box-shadow:3px 0 20px rgba(0,0,0,.2)}
@@ -107,17 +111,7 @@
     /* ── MAP ─────────────────────────────────────────────────── */
     #map{position:fixed;top:var(--hh);left:0;right:0;bottom:0;}
 
-    /* ── LOADING ─────────────────────────────────────────────── */
-    #ldg{position:fixed;inset:0;z-index:999;background:var(--forest);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
-      transition:opacity .4s}
-    #ldg.gone{opacity:0;pointer-events:none}
-    .ring{width:38px;height:38px;border:3px solid rgba(255,255,255,.1);
-      border-top-color:var(--moss);border-radius:50%;animation:spin .8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    #ldg p{color:var(--mist);font-size:.72rem;letter-spacing:.07em;text-transform:uppercase}
-
-    /* ── ERROR PANEL ─────────────────────────────────────────── */
+/* ── ERROR PANEL ─────────────────────────────────────────── */
     #errpanel{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;
       background:#3a1a1a;color:#fde8e8;padding:10px 16px;border-radius:8px;
       font-size:.72rem;max-width:420px;line-height:1.5;
@@ -167,7 +161,6 @@
 </head>
 <body>
 
-<div id="ldg"><div class="ring"></div><p>3D-Karte wird geladen …</p></div>
 
 <header id="hdr">
   <a href="https://www.fva-bw.de" target="_blank" class="header-logo" title="FVA Baden-Württemberg">
@@ -198,8 +191,8 @@
 </header>
 
 <button id="tbtn" onclick="toggleSB()" title="Seitenleiste">
-  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-    <path d="M7 1L3 5L7 9" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <svg width="5" height="9" viewBox="0 0 5 9" fill="none">
+    <path d="M4 1L1 4.5L4 8" stroke="#7a8a80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </button>
 
@@ -218,41 +211,85 @@
 const SECTIONS = [
   { id:'waldf', title:'Waldfunktionen', color:'#3d7a52', layers:[
     { id:'l01', name:'Bodenschutzwald & Lawinenschutz',      wms:'WMS_FVA_Bodenschutzwald',                     lyr:'bodenschutzwald' },
-    { id:'l02', name:'Erholungswald Stufen 1 und 2',         wms:'WMS_FVA_Erholungswald_Stufe1und2',            lyr:'erholungswald_stufe1und2' },
+    { id:'l02', name:'Erholungswald Stufen 1 und 2',         wms:'WMS_FVA_Erholungswald_Stufe1und2',            lyr:'erholungswald' },
     { id:'l03', name:'Gesetzlicher Erholungswald',           wms:'WMS_FVA_Gesetzlicher_Erholungswald',          lyr:'gesetzlicher_erholungswald' },
     { id:'l04', name:'Immissionsschutzwald',                 wms:'WMS_FVA_Immissionsschutzwald',                lyr:'immissionsschutzwald' },
     { id:'l05', name:'Klimaschutzwald',                      wms:'WMS_FVA_Klimaschutzwald',                     lyr:'klimaschutzwald' },
     { id:'l06', name:'Sichtschutzwald',                      wms:'WMS_FVA_Sichtschutzwald',                     lyr:'sichtschutzwald' },
-    { id:'l07', name:'Schutzwald gg. Umwelteinwirkungen',    wms:'WMS_FVA_Gesetzlicher_Umweltschutzwald',       lyr:'gesetzlicher_umweltschutzwald' },
-    { id:'l08', name:'Wasserschutzwald',                     wms:'WMS_FVA_Wasserschutzwald',                    lyr:'wasserschutzwald' },
+    { id:'l07', name:'Schutzwald gg. Umwelteinwirkungen',    wms:'WMS_FVA_Gesetzlicher_Umweltschutzwald',       lyr:'umweltschutzwald' },
+    { id:'l08', name:'Wasserschutzwald',                     wms:'WMS_FVA_Wasserschutzwald',                    lyr:'sonstiger_wasserschutzwald' },
   ]},
   { id:'waldb', title:'Waldbiotope', color:'#5a9468', layers:[
     { id:'l10', name:'Waldbiotope',                          wms:'WMS_FVA_Waldbiotope',                         lyr:'waldbiotope' },
   ]},
   { id:'stand', title:'Forstliche Standortskartierung', color:'#8a6a3a', layers:[
-    { id:'l20', name:'Forstliche Standortskarte',            wms:'WMS_FVA_Forstliche_Standortskarte',           lyr:'forstliche_standortskarte' },
-    { id:'l21', name:'Regionale Gliederung',                 wms:'WMS_FVA_RegionaleGliederung',                 lyr:'regionalegliederung' },
+    { id:'l20', name:'Forstliche Standortskarte',            wms:'WMS_FVA_Forstliche_Standortskarte',           lyr:'kartierobjektuebersicht' },
+    { id:'l21', name:'Regionale Gliederung',                 wms:'WMS_FVA_RegionaleGliederung',                 lyr:'regionale_zonalwaelder_klimahaupttyp' },
   ]},
   { id:'wild', title:'Wildtierökologie', color:'#7a5a2a', layers:[
-    { id:'l30', name:'Aktionsplan Auerhuhn – Maßnahmenplan', wms:'WMS_FVA_Auerhuhn_Aktion_Massnahmenplan',      lyr:'auerhuhn_aktion_massnahmenplan' },
-    { id:'l31', name:'Windenergie und Auerhuhn',             wms:'WMS_FVA_Auerhuhn_Windenergie',                lyr:'auerhuhn_windenergie' },
-    { id:'l32', name:'Auerhuhnrelevante Flächen',            wms:'WMS_FVA_AuerhuhnFlaechen',                    lyr:'auerhuhnflaechen' },
-    { id:'l33', name:'Wildkatzennachweise',                  wms:'WMS_FVA_Wildkatze',                           lyr:'wildkatze' },
-    { id:'l34', name:'Generalwildwegeplan',                  wms:'WMS_FVA_Generalwildwegeplan',                 lyr:'generalwildwegeplan' },
-    { id:'l35', name:'Luchsnachweise',                       wms:'WMS_FVA_Luchsnachweise',                      lyr:'luchsnachweise' },
-    { id:'l36', name:'Wolfsnachweise',                       wms:'WMS_FVA_Wolfsnachweise',                      lyr:'wolfsnachweise' },
-    { id:'l37', name:'Auerhuhnverbreitung',                  wms:'WMS_FVA_Auerhuhnverbreitung',                 lyr:'auerhuhnverbreitung' },
-    { id:'l38', name:'Rotwildgebiete',                       wms:'WMS_FVA_Rotwildgebiete',                      lyr:'rotwildgebiete' },
-    { id:'l39', name:'Wildruhegebiete',                      wms:'WMS_FVA_Wildruhegebiete',                     lyr:'wildruhegebiete' },
+    { id:'l30', name:'Aktionsplan Auerhuhn – Maßnahmenplan', wms:'WMS_FVA_Auerhuhn_Aktion_Massnahmenplan',      lyr:'Massnahmenplan_2023-202841109' },
+    { id:'l31', name:'Windenergie und Auerhuhn',             wms:'WMS_FVA_Auerhuhn_Windenergie',                lyr:'Windkraft_und_Auerhuhn14260' },
+    { id:'l32', name:'Auerhuhnrelevante Flächen',            wms:'WMS_FVA_AuerhuhnFlaechen',                    lyr:'prioritaere_flaechen' },
+    { id:'l33', name:'Wildkatzennachweise',                  wms:'WMS_FVA_Wildkatze',                           lyr:'wildkatzennachweise' },
+    { id:'l34', name:'Generalwildwegeplan',                  wms:'WMS_FVA_Generalwildwegeplan',                 lyr:'Wildtierkorridor_1000m' },
+    { id:'l35', name:'Luchsnachweise',                       wms:'WMS_FVA_Luchsnachweise',                      lyr:'luchsnachweise_2016_2017' },
+    { id:'l36', name:'Wolfsnachweise',                       wms:'WMS_FVA_Wolfsnachweise',                      lyr:'wolfsnachweise_2016_2017' },
+    { id:'l37', name:'Auerhuhnverbreitung',                  wms:'WMS_FVA_Auerhuhnverbreitung',                 lyr:'auerhuhnverbreitungsgebiet_2023' },
+    { id:'l38', name:'Rotwildgebiete',                       wms:'WMS_FVA_Rotwildgebiete',                      lyr:'rotwildgebiete_baden_wuerttemberg' },
+    { id:'l39', name:'Wildruhegebiete',                      wms:'WMS_FVA_Wildruhegebiete',                     lyr:'wildschutzgebiete_und_wildruhegebiete' },
   ]},
   { id:'klima', title:'Klimafolgenforschung', color:'#2a5a8a', layers:[
-    { id:'l40', name:'Bonität',                              wms:'WMS_FVA_Klima_Bonitaet',                      lyr:'bonitaet' },
-    { id:'l41', name:'Buchdruckergefährdung',                wms:'WMS_FVA_Klima_Buchdruckergefaehrdung',        lyr:'buchdruckergefaehrdung' },
-    { id:'l42', name:'Sturmwurfgefährdung',                  wms:'WMS_FVA_Klima_Sturm',                         lyr:'sturmwurfgefaehrdung' },
-    { id:'l43', name:'Bodenwasserhaushalt',                  wms:'WMS_FVA_Klima_Wasserhaushalt',                lyr:'bodenwasserhaushalt' },
-    { id:'l44', name:'Artverbreitung',                       wms:'WMS_FVA_Klima_Artverbreitung',                lyr:'artverbreitung' },
-    { id:'l45', name:'Vulnerabilität',                       wms:'WMS_FVA_Klima_Vulnerabilitaet',               lyr:'vulnerabilitaet' },
-    { id:'l46', name:'Baumarteneigung',                      wms:'WMS_FVA_Klima_Baumarteneignung_Klimawandel',  lyr:'baumarteneignung' },
+    { id:'l40', name:'Bonität', wms:'WMS_FVA_Klima_Bonitaet', lyr:'ausgangsbonitaet_fichte_current',
+      // current/1981_2010 → Ausgangsbonitaet; RCP → relative Veränderung
+      lyrFn:(art,zeit)=>{
+        const a4=['fichte','tanne','eiche','buche'];
+        const a=a4.includes(art)?art:null; if(!a) return null;
+        if(zeit==='current'||zeit==='1981_2010') return 'ausgangsbonitaet_'+a+'_current';
+        return 'relative_bonitaetsveraenderung_'+a+'_'+zeit;
+      }},
+    { id:'l41', name:'Buchdruckergefährdung', wms:'WMS_FVA_Klima_Buchdruckergefaehrdung', lyr:'buchdruckerrisiko_1981_2010',
+      // keine Baumart; current → 1981_2010
+      lyrFn:(art,zeit)=>'buchdruckerrisiko_'+(zeit==='current'?'1981_2010':zeit) },
+    { id:'l42', name:'Sturmwurfgefährdung', wms:'WMS_FVA_Klima_Sturm', lyr:'sturmschadensrisiko_real_fichte',
+      // Baumarten in Kategorien zusammengefasst
+      lyrFn:(art,zeit)=>{
+        const m={fichte:'fichte',tanne:'tanne_douglasie',douglasie:'tanne_douglasie',
+                 eiche:'buche_eiche',buche:'buche_eiche',waldkiefer:'kiefer_laerche',bergahorn:'andere_baumarten'};
+        return 'sturmschadensrisiko_real_'+(m[art]||'fichte');
+      }},
+    { id:'l43', name:'Bodenwasserhaushalt', wms:'WMS_FVA_Klima_Wasserhaushalt', lyr:'relative_bodenwassersaettigung_fichte_1981_2010',
+      // nur fichte/buche verfügbar; current → 1981_2010
+      lyrFn:(art,zeit)=>{
+        const a=['fichte','buche'].includes(art)?art:'fichte';
+        return 'relative_bodenwassersaettigung_'+a+'_'+(zeit==='current'?'1981_2010':zeit);
+      }},
+    { id:'l44', name:'Artverbreitung', wms:'WMS_FVA_Klima_Artverbreitung', lyr:'artverbreitung_fichte_heute',
+      // WMS nutzt "heute" statt "current" und andere Zeiträume (2041/2061)
+      lyrFn:(art,zeit)=>{
+        const a4=['fichte','tanne','eiche','buche'];
+        const a=a4.includes(art)?art:null; if(!a) return null;
+        const z={current:'heute','1981_2010':'heute',
+                 rcp45_2021_2050:'rcp45_2041_2060',rcp45_2071_2100:'rcp45_2061_2080',
+                 rcp85_2021_2050:'rcp85_2041_2060',rcp85_2071_2100:'rcp85_2061_2080'};
+        return 'artverbreitung_'+a+'_'+(z[zeit]||'heute');
+      }},
+    { id:'l45', name:'Vulnerabilität', wms:'WMS_FVA_Klima_Vulnerabilitaet', lyr:'vulnerabilitaet_fichte',
+      lyrFn:(art,zeit)=>{
+        const a4=['fichte','tanne','eiche','buche'];
+        return 'vulnerabilitaet_'+(a4.includes(art)?art:'gesamt');
+      }},
+    { id:'l46', name:'Baumarteneigung', wms:'WMS_FVA_Klima_Baumarteneignung_Klimawandel', lyr:'baumarteneignung_fichte_heute',
+      // Gruppe A (fichte/tanne/buche): 2021_2050/2071_2100; Gruppe B (rest): 2041_2060/2061-2080
+      lyrFn:(art,zeit)=>{
+        const gA=['fichte','tanne','buche'];
+        const zA={current:'heute','1981_2010':'heute',
+                  rcp45_2021_2050:'rcp45_2021_2050',rcp45_2071_2100:'rcp45_2071_2100',
+                  rcp85_2021_2050:'rcp85_2021_2050',rcp85_2071_2100:'rcp85_2071_2100'};
+        const zB={current:'heute','1981_2010':'heute',
+                  rcp45_2021_2050:'rcp45_2041_2060',rcp45_2071_2100:'rcp45_2061-2080',
+                  rcp85_2021_2050:'rcp85_2041_2060',rcp85_2071_2100:'rcp85_2061-2080'};
+        return 'baumarteneignung_'+art+'_'+((gA.includes(art)?zA:zB)[zeit]||'heute');
+      }},
   ]},
   { id:'wind', title:'Potentialstudie Windenergie', color:'#5a6a8a', layers:[
     { id:'l50', name:'Windenergie 5,25 m/s – 100 m',        wms:'WMS_FVA_Windenergiepotential_Wald_525ms_100m', lyr:'windenergiepotential_wald_525ms_100m' },
@@ -261,7 +298,7 @@ const SECTIONS = [
   { id:'fern', title:'Fernerkundung', color:'#2a6a6a', layers:[
     { id:'l60', name:'Baumbedeckung',                        wms:'WMS_FVA_Fernerkundung_Baumbedeckung',         lyr:'fern_baumlayer' },
     { id:'l61', name:'Laub-Nadelwaldkarte',                  wms:'WMS_FVA_Fernerkundung_Laub_Nadelwald',        lyr:'fern_laubnadelwald' },
-    { id:'l62', name:'Lücken & Bestandeshöhentypen',         wms:'WMS_FVA_Fernerkundung_Luecken_Bestandhoehen', lyr:'Bestandeshoehentyp_C' },
+    // l62 Lücken & Bestandeshöhentypen: WMS liefert GetMap nur für EPSG:25832, nicht 3857/4326 → nicht darstellbar
     { id:'l63', name:'Waldbedeckung',                        wms:'WMS_FVA_Fernerkundung_Waldbedeckung',         lyr:'fern_waldbedeckung' },
     { id:'l64', name:'Waldbestockung',                       wms:'WMS_FVA_Fernerkundung_Waldbestockung',        lyr:'fern_bestockungslayer' },
     { id:'l65', name:'Waldhöhenstrukturkarte',               wms:'WMS_FVA_Fernerkundung_Waldhoehenstruktur',    lyr:'fern_whsk' },
@@ -362,7 +399,6 @@ map.addControl(new Toggle2DControl(), 'top-right');
 map.addControl(new maplibregl.ScaleControl({ unit:'metric' }), 'bottom-left');
 
 map.on('load', () => {
-  document.getElementById('ldg').classList.add('gone');
   buildSidebar();
 });
 
@@ -374,7 +410,7 @@ function buildSidebar(){
     const isKlima = sec.id === 'klima';
     const wrap = document.createElement('div'); wrap.className = 'sec';
     const hdr = document.createElement('div');
-    hdr.className = 'shdr' + (si===0?' op':'');
+    hdr.className = 'shdr' + (sec.id==='fern'?' op':'');
     hdr.innerHTML =
       '<span class="sdot" style="background:'+sec.color+'"></span>'+
       '<span class="stit">'+sec.title+'</span>'+
@@ -393,6 +429,9 @@ function buildSidebar(){
           <option value="tanne"${selectedArt==='tanne'?' selected':''}>Tanne</option>
           <option value="eiche"${selectedArt==='eiche'?' selected':''}>Eiche</option>
           <option value="buche"${selectedArt==='buche'?' selected':''}>Buche</option>
+          <option value="bergahorn"${selectedArt==='bergahorn'?' selected':''}>Bergahorn</option>
+          <option value="douglasie"${selectedArt==='douglasie'?' selected':''}>Douglasie</option>
+          <option value="waldkiefer"${selectedArt==='waldkiefer'?' selected':''}>Waldkiefer</option>
         </select>
         <select style="flex:1;padding:4px 8px;border:1px solid #c8dece;border-radius:4px;font-size:.7rem;background:#fff;">
           <option value="current"${selectedZeitraum==='current'?' selected':''}>Heute</option>
@@ -439,7 +478,9 @@ async function updateKlimaLayers(){
   if(!klimaSec) return;
   const suffix = '(' + selectedArt + ', ' + (selectedZeitraum === 'current' ? 'heute' : selectedZeitraum.replace(/_/g,' ')) + ')';
   for(const cfg of klimaSec.layers){
-    const resolved = await getResolvedLayer(cfg.wms);
+    const resolved = cfg.lyrFn
+      ? cfg.lyrFn(selectedArt, selectedZeitraum)
+      : await getResolvedLayer(cfg.wms);
     if(!resolved) continue;
     cfg.lyr = resolved;
     const el = elems[cfg.id];
@@ -519,11 +560,13 @@ async function toggle(cfg, color){
     let usedCRS = 'EPSG:4326';
     try {
       const capData = await getCapabilities(cfg.wms);
-      const match = capData.layers.find(l =>
-        l.toLowerCase() === cfg.lyr.toLowerCase() ||
-        l.toLowerCase().replace(/_/g,'').includes(cfg.lyr.toLowerCase().replace(/_/g,'').slice(0,8))
-      );
-      if(match) resolvedLayer = match;
+      if(!cfg.lyrFn){
+        const match = capData.layers.find(l =>
+          l.toLowerCase() === cfg.lyr.toLowerCase() ||
+          l.toLowerCase().replace(/_/g,'').includes(cfg.lyr.toLowerCase().replace(/_/g,'').slice(0,8))
+        );
+        if(match) resolvedLayer = match;
+      }
       if(capData.crsList.some(c=>c.includes('3857'))) usedCRS = 'EPSG:3857';
     } catch(e){ console.warn('Capabilities failed:', e.message); }
 
