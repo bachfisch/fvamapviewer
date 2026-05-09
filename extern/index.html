@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Der Wald in Baden-Württemberg · FVA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Loading overlay ───────────────────────────────────── -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>Daten werden geladen …</span>
+  </div>
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <header>
+    <a href="https://www.fva-bw.de" target="_blank" class="header-logo" title="FVA Baden-Württemberg">
+      <img src="www/logo/logo_fva.svg" alt="FVA" class="logo-img"
+           onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';" />
+      <div id="logo-fallback" style="display:none;">
+        <div class="logo-text">FVA</div>
+        <div class="logo-sub">Forstliche Versuchs- und Forschungsanstalt BW</div>
+      </div>
+    </a>
+    <div class="divider"></div>
+    <div class="page-title">Der Wald in Baden-Württemberg</div>
+
+    <nav class="header-links">
+      <div class="header-socials">
+        <a href="https://www.instagram.com/fva_bw" target="_blank" title="Instagram">
+          <img src="www/icon/icon_insta.png" alt="Instagram" />
+        </a>
+        <a href="https://bawü.social/@FVABW" target="_blank" title="Mastodon">
+          <img src="www/icon/icon_mastodon.png" alt="Mastodon" />
+        </a>
+        <a href="https://www.linkedin.com/company/fva-bw" target="_blank" title="LinkedIn">
+          <img src="www/icon/icon_linkedin.png" alt="LinkedIn" />
+        </a>
+        <a href="https://www.youtube.com/channel/UCxyaUkQwqig2zL_JG9OotCg" target="_blank" title="YouTube">
+          <img src="www/icon/icon_youtube.png" alt="YouTube" />
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ── Sidebar ───────────────────────────────────────────── -->
+  <aside>
+
+    <!-- Block 1: Attribut → Einheit → Jahr (in this order) -->
+    <div class="sb-block">
+      <div class="sb-block-title">Merkmal</div>
+      <div class="filter-group">
+        <div class="filter-label">Attribut</div>
+        <select id="sel-attribute" class="fva-select"></select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Einheit</div>
+        <select id="sel-unit" class="fva-select"></select>
+      </div>
+    </div>
+
+    <!-- Block 2: Räumlich -->
+    <div class="sb-block">
+      <div class="sb-block-title">Räumlich</div>
+      <div class="filter-group">
+        <div class="filter-label">Landkreis</div>
+        <div class="select-clearable">
+          <select id="sel-kreis" class="fva-select">
+            <option value="">Alle Kreise</option>
+          </select>
+          <button class="clear-btn" id="clear-kreis" title="Auswahl löschen" aria-label="Auswahl löschen">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block 3: Filtern & Gruppieren -->
+    <div class="sb-block">
+      <div class="sb-block-title">Filtern &amp; Gruppieren</div>
+
+      <div class="filter-group">
+        <div class="filter-label">Filtern nach</div>
+        <select id="sel-filter-dim" class="fva-select"></select>
+      </div>
+      <div class="filter-group" id="filter-value-group">
+        <div class="filter-label">Wert</div>
+        <select id="sel-filter-value" class="fva-select" disabled></select>
+      </div>
+
+      <div class="filter-group" style="margin-top:4px;">
+        <div class="filter-label">Gruppieren nach</div>
+        <select id="sel-group-dim" class="fva-select"></select>
+      </div>
+      <div class="filter-group" style="margin-top:4px;">
+        <div class="filter-label">2. Gruppierung</div>
+        <select id="sel-group-dim2" class="fva-select" disabled></select>
+      </div>
+    </div>
+
+    <div id="data-warning" class="data-warning" style="display:none;"></div>
+
+  </aside>
+
+  <!-- ── Main ──────────────────────────────────────────────── -->
+  <main>
+
+    <!-- Stats strip -->
+    <div class="stats-strip">
+      <div class="strip-card">
+        <div class="strip-val" id="stat-min">—</div>
+        <div class="strip-lbl">Min</div>
+      </div>
+      <div class="strip-divider"></div>
+      <div class="strip-card">
+        <div class="strip-val" id="stat-max">—</div>
+        <div class="strip-lbl">Max</div>
+      </div>
+      <div class="strip-divider"></div>
+      <div class="strip-card">
+        <div class="strip-val" id="stat-mean">—</div>
+        <div class="strip-lbl">Mittelwert</div>
+      </div>
+      <div class="strip-divider"></div>
+      <div class="strip-card">
+        <div class="strip-val" id="stat-n">—</div>
+        <div class="strip-lbl">Kreise mit Daten</div>
+      </div>
+    </div>
+
+    <!-- Map + Chart Row -->
+    <div class="map-chart-row">
+      <div id="map"></div>
+      <div class="chart-wrap">
+        <div class="chart-title" id="chart-title"></div>
+        <canvas id="district-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header" id="table-title">Tabelle · aktuelle Auswahl</div>
+      <div class="table-scroll">
+        <table class="data-tbl">
+          <thead>
+            <tr>
+              <th data-col="name"  data-type="str" class="sortable">Landkreis <span class="sort-icon"></span></th>
+              <th data-col="id"    data-type="str" class="sortable" style="text-align:right">ID <span class="sort-icon"></span></th>
+              <th data-col="total" data-type="num" class="sortable sorted-desc" style="text-align:right">Wert <span class="sort-icon">↓</span></th>
+              <th data-col="se"    data-type="num" class="sortable" style="text-align:right">SE <span class="sort-icon"></span></th>
+              <th>Einheit</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-error-bars@3"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
