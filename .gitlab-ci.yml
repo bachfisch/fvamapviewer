@@ -1,15 +1,20 @@
+image: node:20
+
 pages:
   stage: deploy
+
+  cache:
+    paths:
+      - node_modules/
+
   script:
-    - mkdir public
-    - cp index.html public/
-    - cp app.js public/
-    - cp style.css public/
-    - cp -r data public/ || true
-    - cp -r www public/ || true
-    - cp -r api public/ || true
+    - npm install
+    - npm run build
+    - mv dist public
+
   artifacts:
     paths:
       - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+
+  only:
+    - main
