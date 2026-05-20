@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary:   #1D9E75;
+  --color-secondary: #378ADD;
+  --color-warning:   #EF9F27;
+  --color-danger:    #D85A30;
+  --color-neutral:   #888780;
+  --color-bg:        #f8f7f4;
+  --color-surface:   #ffffff;
+  --color-border:    #e2e0da;
+  --color-text:      #1a1a18;
+  --color-text-muted: #6b6962;
+  --sidebar-width:   320px;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* MapLibre reset */
+.maplibregl-map {
+  font-family: var(--font-sans);
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
